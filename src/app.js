@@ -8,6 +8,9 @@ const app = express();
 const userRoute = require("./routes/users/usersRoute");
 const incomeRoute = require("./routes/income/incomeRoute");
 const expenseRoute = require("./routes/expenses/expenseRoute")
+const accountStatsRoute = require("./routes/stats/stats");
+
+const cors = require('cors');
 
 mongoose.set("strictQuery", false);
 
@@ -20,6 +23,7 @@ mongoose.set("strictQuery", false);
 // app.use(logger);
 
 app.use(express.json());
+app.use(cors());
 
 app.get('/',(req,res)=>{
     res.json({
@@ -37,7 +41,10 @@ app.use("/api/users", userRoute);
 app.use('/api/income',incomeRoute)
 
 //expense route
-app.use('/api/expense',expenseRoute)
+app.use('/api/expenses',expenseRoute)
+
+//stats
+app.use("/api/stats", accountStatsRoute);
 
 //error
 app.use(notfound);

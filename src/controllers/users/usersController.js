@@ -47,7 +47,41 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUserCtrl, fetchUsersCtrl, loginUserCtrl };
+//profile
+const userProfileCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req?.user;
+  console.log("id", _id);
+
+  try {
+    console.log("before myProfile");
+    const myProfile = await User.findById(_id).populate(["expenses", "income"]);
+    console.log("profile data", myProfile);
+    console.log("myProfile");
+    res.json(myProfile);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+//----------------
+//user details
+//----------------
+const fetchUserDetailsCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  //check if user id is valid
+  validateMongodbId(id);
+  try {
+    const user = await User.findById(id);
+    res.json(user);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+module.exports = { registerUserCtrl, fetchUsersCtrl, loginUserCtrl, userProfileCtrl, fetchUserDetailsCtrl };
+
+
+
 
 
 //--useful comments--

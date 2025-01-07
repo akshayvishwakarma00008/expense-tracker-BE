@@ -3,13 +3,14 @@ const expressAsyncHandler = require("express-async-handler");
 
 //create
 const createExpCtrl = expressAsyncHandler(async (req, res) => {
-  const { title, amount, description, user } = req?.body;
+  console.log("request",req?.body);
+  const { title, amount, description} = req?.body;
   try {
     const expense = await Expense.create({
       title,
       amount,
       description,
-      user,
+      user:req?.user?._id,
     });
     res.json(expense);
   } catch (error) {
