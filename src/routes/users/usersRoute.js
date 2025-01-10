@@ -4,7 +4,10 @@ const {
   fetchUsersCtrl,
   loginUserCtrl,
   userProfileCtrl,
-  fetchUserDetailsCtrl
+  fetchUserDetailsCtrl,
+  updateUserCtrl,
+  updateUserPasswordCtrl,
+  deleteUsersCtrl
 } = require("../../controllers/users/usersController");
 
 const authMiddleware = require("../../middleware/authMiddleware");
@@ -15,5 +18,7 @@ userRoute.post("/login", loginUserCtrl);
 userRoute.get("/users", fetchUsersCtrl);
 userRoute.get("/profile", authMiddleware, userProfileCtrl);
 userRoute.get("/:id", fetchUserDetailsCtrl);
+userRoute.put("/:id", authMiddleware, updateUserCtrl);
+userRoute.delete("/:id", deleteUsersCtrl);
 
 module.exports = userRoute;

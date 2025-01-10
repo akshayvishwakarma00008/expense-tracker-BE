@@ -9,6 +9,7 @@ const userRoute = require("./routes/users/usersRoute");
 const incomeRoute = require("./routes/income/incomeRoute");
 const expenseRoute = require("./routes/expenses/expenseRoute")
 const accountStatsRoute = require("./routes/stats/stats");
+const userStatsRoute = require("./routes/stats/userStats");
 
 const cors = require('cors');
 
@@ -45,6 +46,9 @@ app.use('/api/expenses',expenseRoute)
 
 //stats
 app.use("/api/stats", accountStatsRoute);
+
+//user stats
+app.use('/api/userstats', userStatsRoute);
 
 //error
 app.use(notfound);

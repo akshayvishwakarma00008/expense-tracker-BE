@@ -1,6 +1,7 @@
 const User = require("../../model/User");
 const expressAsyncHandler = require("express-async-handler");
 const generateToken = require("../../middleware/generateToken");
+const validateMongodbId = require("../../utils/validateMongodbID");
 
 //register
 const registerUserCtrl = expressAsyncHandler(async (req, res) => {
@@ -10,7 +11,14 @@ const registerUserCtrl = expressAsyncHandler(async (req, res) => {
   if (userExists) throw new Error("User already exists");
   try {
     const user = await User.create({ email, firstname, lastname, password });
-    res.status(200).json(user);
+    res.status(200).json({
+      _id:user?._id,
+      firstname: user?.firstname,
+      lastname: user?.lastname,
+      email: user?.email,
+      isAdmin: user?.admin,
+      token: generateToken(user?._id),
+    });
   } catch (error) {
     res.json(error);
   }
@@ -50,13 +58,9 @@ const loginUserCtrl = expressAsyncHandler(async (req, res) => {
 //profile
 const userProfileCtrl = expressAsyncHandler(async (req, res) => {
   const { _id } = req?.user;
-  console.log("id", _id);
 
   try {
-    console.log("before myProfile");
     const myProfile = await User.findById(_id).populate(["expenses", "income"]);
-    console.log("profile data", myProfile);
-    console.log("myProfile");
     res.json(myProfile);
   } catch (error) {
     res.json(error);
@@ -78,11 +82,73 @@ const fetchUserDetailsCtrl = expressAsyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { registerUserCtrl, fetchUsersCtrl, loginUserCtrl, userProfileCtrl, fetchUserDetailsCtrl };
+//------------------------------
+//Update profile
+//------------------------------
+const updateUserCtrl = expressAsyncHandler(async (req, res) => {
+  const { _id } = req?.user;
+  validateMongodbId(_id);
+  const user = await User.findByIdAndUpdate(
+    _id,
+    {
+      firstname: req?.body?.firstname,
+      lastname: req?.body?.lastname,
+      email: req?.body?.email,
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.json(user);
+});
 
+//------------------------------
+//Update password
+//------------------------------
 
+const updateUserPasswordCtrl = expressAsyncHandler(async (req, res) => {
+  //destructure the login user
+  const { _id } = req.user;
+  const { password } = req.body;
+  validateMongodbId(_id);
+  //Find the user by _id
+  const user = await User.findById(_id);
 
+  if (password) {
+    user.password = password;
+    const updatedUser = await user.save();
+    res.json(updatedUser);
+  } else {
+    res.json(user);
+  }
+});
 
+//------------------------------
+//Delete user
+//------------------------------
+const deleteUsersCtrl = expressAsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  //check if user id is valid
+  validateMongodbId(id);
+  try {
+    const deletedUser = await User.findByIdAndDelete(id);
+    res.json(deletedUser);
+  } catch (error) {
+    res.json(error);
+  }
+});
+
+module.exports = {
+  registerUserCtrl,
+  fetchUsersCtrl,
+  loginUserCtrl,
+  userProfileCtrl,
+  fetchUserDetailsCtrl,
+  deleteUsersCtrl,
+  updateUserCtrl,
+  updateUserPasswordCtrl,
+};
 
 //--useful comments--
 
