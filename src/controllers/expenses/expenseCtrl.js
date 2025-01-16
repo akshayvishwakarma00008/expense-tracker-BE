@@ -3,12 +3,13 @@ const expressAsyncHandler = require("express-async-handler");
 
 //create
 const createExpCtrl = expressAsyncHandler(async (req, res) => {
-  const { title, amount, description} = req?.body;
+  const { title, amount, description, category} = req?.body;
   try {
-    const expense = await Expense.crseate({
+    const expense = await Expense.create({
       title,
       amount,
       description,
+      category,
       user:req?.user?._id,
     });
     res.json(expense);
@@ -45,11 +46,11 @@ const fetchExpByIdCtrl = expressAsyncHandler(async (req, res) => {
 //update expense
 const updataExpCtrl = expressAsyncHandler(async (req, res) => {
   const { id } = req?.params;
-  const { title, amount, description } = req?.body;
+  const { title, amount, description, category } = req?.body;
   try {
     const expense = await Expense.findByIdAndUpdate(
       id,
-      { title, amount, description },
+      { title, amount, description, category },
       { new: true }
     );
     res.json(expense);

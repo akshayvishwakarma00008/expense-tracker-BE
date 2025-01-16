@@ -4,7 +4,8 @@ const {
   getIncomeByUserMonthly,
   getExpensesAllUsersMonthly,
   getIncomeAllUsersMonthly,
-  getExpensesByUserWeekly
+  getExpensesByUserWeekly,
+  getExpensesByCategories
   
 } = require("../../controllers/accountStatsCtrl/userStats");
 
@@ -17,5 +18,7 @@ userStatsRoute.get("/income/:userId/monthly", getIncomeByUserMonthly);
 
 userStatsRoute.get("/all-users-expenses/monthly", getExpensesAllUsersMonthly);
 userStatsRoute.get("/all-users-income/monthly", getIncomeAllUsersMonthly);
+
+userStatsRoute.get("/expenses-by-category", getExpensesByCategories);
 
 module.exports = userStatsRoute;
